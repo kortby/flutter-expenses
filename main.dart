@@ -5,7 +5,15 @@ import 'package:expenses/widgets/transaction_list.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'package:flutter/services.dart';
+
 void main() {
+  // if we don't like to rotate
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  //   DeviceOrientation.portraitDown,
+  // ]);
   runApp(const MyApp());
 }
 
@@ -38,6 +46,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _transList = [];
+  bool _showChart = true;
 
   void _addNewTransaction(
       String txTitle, double txAmount, DateTime chosenDate) {
@@ -81,26 +90,58 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final bool isLandscape = mediaQuery.orientation == Orientation.landscape;
+    final myAppBar = AppBar(
+      title: Text(widget.title),
+      actions: <Widget>[
+        IconButton(
+          onPressed: () => {_startAddNewTransaction(context)},
+          icon: const Icon(Icons.add),
+        ),
+      ],
+    );
+    final txList = Container(
+      height: (mediaQuery.size.height - myAppBar.preferredSize.height) * 0.7,
+      child: TransactionList(_transList, _deleteTransaction),
+    );
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () => {_startAddNewTransaction(context)},
-            icon: const Icon(Icons.add),
-          ),
-        ],
-      ),
+      appBar: myAppBar,
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text('Show Chart'),
+                Switch(
+                    value: _showChart,
+                    onChanged: (val) {
+                      setState(() {
+                        _showChart = val;
+                      });
+                    }),
+              ],
+            ),
             Container(
               padding: const EdgeInsets.all(10),
-              child: Chart(_recentTrans()),
+              height: isLandscape
+                  ? (mediaQuery.size.height -
+                          myAppBar.preferredSize.height -
+                          mediaQuery.padding.top) *
+                      0.7
+                  : (mediaQuery.size.height -
+                          myAppBar.preferredSize.height -
+                          mediaQuery.padding.top) *
+                      0.3,
+              child: _showChart
+                  ? Chart(
+                      _recentTrans(),
+                    )
+                  : txList,
             ),
-            TransactionList(_transList, _deleteTransaction),
           ],
         ),
       ),

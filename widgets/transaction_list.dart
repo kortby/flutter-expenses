@@ -11,34 +11,35 @@ class TransactionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 400,
       child: transactions.isEmpty
-          ? Column(
-              children: <Widget>[
-                const Text(
-                  'No Transactions added yet!',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
+          ? LayoutBuilder(builder: (context, constrait) {
+              return Column(
+                children: <Widget>[
+                  const Text(
+                    'No Transactions added yet!',
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  height: 200,
-                  // decoration: const BoxDecoration(
-                  //   image: DecorationImage(
-                  //     image: AssetImage(
-                  //       'assets/images/zz.webp',
-                  //     ),
-                  //   ),
-                  // ),
-                  child: Image.asset('assets/images/zz.webp'),
-                ),
-              ],
-            )
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    height: constrait.maxHeight * 0.6,
+                    // decoration: const BoxDecoration(
+                    //   image: DecorationImage(
+                    //     image: AssetImage(
+                    //       'assets/images/zz.webp',
+                    //     ),
+                    //   ),
+                    // ),
+                    child: Image.asset('assets/images/zz.webp'),
+                  ),
+                ],
+              );
+            })
           : ListView.builder(
               itemBuilder: (ctx, idx) {
                 return Card(
